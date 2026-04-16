@@ -1,56 +1,21 @@
-import os
-import random
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = os.getenv("BOT_TOKEN")
-
-users = {}
-
-def get_user(uid):
-    if uid not in users:
-        users[uid] = {"coins": 100}
-    return users[uid]
+TOKEN = "8306346376:AAFqKf37445j0PxVo8Vx_PjJO65fJ9eluVk"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🎮 K4FUN Bot is online!")
+    await update.message.reply_text("🎮 Welcome to your Game Bot!")
 
-async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    u = get_user(update.effective_user.id)
-    await update.message.reply_text(f"💰 Coins: {u['coins']}")
-
-async def flip(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    uid = update.effective_user.id
-    u = get_user(uid)
-
-    if len(context.args) < 2:
-        return await update.message.reply_text("Use /flip heads 10")
-
-    choice = context.args[0]
-    bet = int(context.args[1])
-
-    if bet > u["coins"]:
-        return await update.message.reply_text("❌ Not enough coins")
-
-    result = random.choice(["heads", "tails"])
-
-    if choice == result:
-        u["coins"] += bet
-        msg = f"🪙 {result} WIN +{bet}"
-    else:
-        u["coins"] -= bet
-        msg = f"🪙 {result} LOSE -{bet}"
-
-    await update.message.reply_text(msg)
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("/start - Start bot\n/help - Help menu")
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("balance", balance))
-    app.add_handler(CommandHandler("flip", flip))
+    app.add_handler(CommandHandler("help", help_cmd))
 
-    print("Bot running...")
+    print("Bot is running...")
     app.run_polling()
 
 if __name__ == "__main__":
